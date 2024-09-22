@@ -1,8 +1,8 @@
 ---
-- name: Tomcat role
+- name: Deploy Tomcat using Ansible Role
   hosts: all
   become: yes
   roles:
-    - role: tomcat-role/Tomcat
+    - role: tomcat-Role/tomcat
       tomcat_group: "tomcat"
       tomcat_user: "tomcat"
