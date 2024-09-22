@@ -11,7 +11,7 @@
   hosts: web
   become: yes
   roles:
-    - role: tomcat-Role/tomcat
+    - role: /var/lib/jenkins/workspace/test-deploy/tomcat-Role/tomcat
       tomcat_group: "tomcat"
       tomcat_user: "tomcat"
 
