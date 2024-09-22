@@ -1,2 +1,2 @@
 [web]
-server1 ansible_host=ec2-54-84-235-95.compute-1.amazonaws.com ansible_user=ubuntu ansible_ssh_private_key_file=/Users/priyanshu/Downloads/tom-1-key.pem
+server1 ansible_host=ec2-54-157-56-16.compute-1.amazonaws.com ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/tom-1-key.pem
