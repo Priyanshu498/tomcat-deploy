@@ -19,7 +19,7 @@ pipeline {
             steps {
                 sh 'ls -al'
                 sh '''
-                ansible-playbook -i ./tomcat-Role/tomcat/aws_ec2.yml ./tomcat-Role/tomcat/playbook.yml
+                ansible-playbook -i /var/lib/jenkins/workspace/test-deploy/tomcat-Role/tomcat/tests/inventory playbook.yml 
                 '''
             }
         }
