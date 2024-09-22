@@ -3,25 +3,21 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Git repository se code checkout karna
                 git branch: 'main', url: 'https://github.com/Priyanshu498/tomcat-deploy.git'
             }
         }
-        stage('Install Ansible') {
+        stage('Install Ansible and AWS dependencies') {
             steps {
-                // Ansible install karne ka step
                 sh '''
                 sudo apt update
-                sudo apt install ansible -y
+                sudo apt install ansible python3-pip -y
+                pip install boto3 --break-system-packages
                 '''
             }
         }
         stage('Run Ansible Playbook') {
             steps {
-                // Debugging ke liye files ki list print karna
                 sh 'ls -al'
-
-                // Playbook ko correct path ke sath run karna
                 sh '''
                 ansible-playbook -i ./tomcat-Role/tomcat/aws_ec2.yml ./tomcat-Role/tomcat/playbook.yml
                 '''
