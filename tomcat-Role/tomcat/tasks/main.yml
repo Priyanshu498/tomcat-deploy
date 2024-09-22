@@ -1,0 +1,127 @@
+# tasks/main.yml
+---
+- name: Ensure required packages are installed
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+  when: ansible_os_family in ['Debian', 'RedHat']
+  tags:
+    - task1
+
+- name: Set JAVA_HOME
+  lineinfile:
+    path: /etc/environment
+    line: "JAVA_HOME=/usr/lib/jvm/jre"
+    state: present
+  tags:
+    - task2
+
+- name: Create Tomcat group
+  group:
+    name: "{{ tomcat_group }}"
+    state: present
+  tags:
+    - task3
+
+- name: Create Tomcat user
+  user:
+    name: "{{ tomcat_user }}"
+    shell: /bin/false
+    home: "{{ tomcat_home }}"
+    create_home: yes
+    system: yes
+    group: "{{ tomcat_group }}"
+  tags:
+    - task4
+
+
+- name: Download Tomcat
+  get_url:
+    url: "https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+  tags:
+    - task5
+
+- name: Extract Tomcat
+  unarchive:
+    src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "{{ tomcat_home }}"
+    remote_src: yes
+    extra_opts: [ "--strip-components=1" ]
+  tags:
+    - task6
+  
+
+- name: Create Tomcat directory
+  file:
+    path: "{{ tomcat_home }}"
+    state: directory
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+  tags:
+    - task7
+
+- name: Set permissions for Tomcat
+  file:
+    path: "{{ tomcat_home }}"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    mode: '0755'
+    recurse: yes
+  tags:
+    - task8
+
+- name: Ensure startup and shutdown scripts are executable
+  file:
+    path: "{{ tomcat_home }}/bin/{{ item }}"
+    mode: '0755'
+  loop:
+    - startup.sh
+    - shutdown.sh
+  tags:
+    - task9
+
+
+
+
+- name: Configure Tomcat users
+  template:
+    src: "tomcat-users.xml.j2"
+    dest: "{{ tomcat_home }}/conf/tomcat-users.xml"
+  notify: restart tomcat
+  tags:
+    - task10
+
+
+- name: Create systemd service file for Tomcat
+  template:
+    src: "tomcat.service.j2"
+    dest: /etc/systemd/system/tomcat.service
+  notify: restart tomcat
+  tags:
+    - task11
+
+- name: Set permissions on Tomcat service file
+  file:
+    path: /etc/systemd/system/tomcat.service
+    mode: '0644'
+    owner: root
+    group: root
+  tags:
+    - task12
+
+
+- name: Reload systemd daemon
+  command: systemctl daemon-reload
+  tags:
+    - task11
+
+
+- name: Start Tomcat service
+  systemd:
+    name: tomcat
+    state: started
+    enabled: yes
+  tags:
+    - task13
