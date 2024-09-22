@@ -11,11 +11,11 @@
   hosts: web
   become: yes
   roles:
-    - role: /var/lib/jenkins/workspace/test-deploy/tomcat-Role/tomcat
+    - role: tomcat-Role/tomcat
       tomcat_group: "tomcat"
       tomcat_user: "tomcat"
 
-  tasks:
+  tasks: 
     - name: Debug hosts
       debug:
         var: ansible_host
