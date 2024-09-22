@@ -1,8 +1,2 @@
-plugin: aws_ec2
-regions:
-  - us-east-1
-filters:
-  instance-state-name: running
-keyed_groups:
-  - key: tags.Name
-    prefix: instance
+[web]
+server1 ansible_host=ec2-54-84-235-95.compute-1.amazonaws.com ansible_user=ubuntu ansible_ssh_private_key_file=/Users/priyanshu/Downloads/tom-1-key.pem
