@@ -9,14 +9,22 @@ pipeline {
         }
         stage('Install Ansible') {
             steps {
-                // Ansible install karne ka step (assuming Ubuntu/Debian)
-                sh 'sudo apt update && sudo apt install ansible -y'
+                // Ansible install karne ka step
+                sh '''
+                sudo apt update
+                sudo apt install ansible -y
+                '''
             }
         }
         stage('Run Ansible Playbook') {
             steps {
-                // Ansible playbook ko execute karna
-                sh 'ansible-playbook -i aws_ec2.yml playbook.yml'
+                // Debugging ke liye files ki list print karna
+                sh 'ls -al'
+
+                // Playbook ko correct path ke sath run karna
+                sh '''
+                ansible-playbook -i ./tomcat-Role/tomcat/aws_ec2.yml ./tomcat-Role/tomcat/playbook.yml
+                '''
             }
         }
     }
@@ -29,3 +37,4 @@ pipeline {
         }
     }
 }
+
