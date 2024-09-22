@@ -1,0 +1,8 @@
+---
+- name: Tomcat role
+  hosts: all
+  become: yes
+  roles:
+    - role: tomcat_roles/Tomcat
+      tomcat_group: "tomcat"
+      tomcat_user: "tomcat"
