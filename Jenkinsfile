@@ -4,7 +4,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Git repository se code checkout karna
-                git branch: 'main', url: 'https://github.com/username/tomcat-deploy.git'
+                git branch: 'main', url: 'https://github.com/Priyanshu498/tomcat-deploy.git'
             }
         }
         stage('Install Ansible') {
