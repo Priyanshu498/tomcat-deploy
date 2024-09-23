@@ -1,7 +1,7 @@
 # defaults/main.yml
 ---
 apt: 
-tomcat_version: "9.0.93"
+tomcat_version: "9.0.95"
 tomcat_major_version: "{{ tomcat_version.split('.')[0] }}"
 tomcat_user: "tomcat"
 tomcat_group: "tomcat"
