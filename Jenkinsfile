@@ -6,21 +6,15 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Priyanshu498/tomcat-deploy.git'
             }
         }
-        stage('Install Ansible and AWS dependencies') {
-            steps {
-                sh '''
-                sudo apt update
-                sudo apt install ansible python3-pip -y
-                pip install boto3 --break-system-packages
-                '''
-            }
-        }
+        
         stage('Run Ansible Playbook') {
             steps {
-                sh 'ls -al'
-                sh '''
-                ansible-playbook -i ./tomcat-Role/tomcat/aws_ec2.yml ./tomcat-Role/tomcat/playbook.yml
-                '''
+                sshagent(['tom-1-key.pem']) { 
+                    sh 'ls -al'
+                    sh '''
+                    ansible-playbook -i ./tomcat-Role/tomcat/aws_ec2.yml ./tomcat-Role/tomcat/playbook.yml
+                    '''
+                }
             }
         }
     }
@@ -33,4 +27,3 @@ pipeline {
         }
     }
 }
-
