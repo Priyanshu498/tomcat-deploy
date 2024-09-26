@@ -21,12 +21,14 @@ pipeline {
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform init"
             }
         }
+
         stage('Terraform Plan') {
             steps {
                 // Run Terraform plan
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform plan"
             }
         }
+
         stage('Approval For Apply') {
             when {
                 expression { params.ACTION == 'apply' }
@@ -36,6 +38,7 @@ pipeline {
                 input message: "Do you want to apply Terraform changes?", ok: "Yes"
             }
         }
+
         stage('Terraform Apply') {
             when {
                 expression { params.ACTION == 'apply' }
@@ -65,30 +68,27 @@ pipeline {
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform destroy -auto-approve"
             }
         }
-        
+
         stage('Tool Deploy') {
             when {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                sshagent(['tomcat']) {
-                    script {
-                        sh '''
-                            ansible-playbook -i ./tomcat_role/Tomcat/aws_ec2.yml ./tomcat_role/Tomcat/playbook.yml
-                        '''
-                    }
+                sshagent(['tomcat']) { 
+                    sh '''
+                    ansible-playbook -i ./tomcat-Role/tomcat/aws_ec2.yml ./tomcat-Role/tomcat/playbook.yml
+                    '''
                 }
             }
         }
     }
+
     post {
         success {
-            // Actions to take if the pipeline is successful
-            echo 'Succeeded!'
+            echo 'Deployment successful'
         }
         failure {
-            // Actions to take if the pipeline fails
-            echo 'Failed!'
+            echo 'Deployment failed'
         }
     }
 }
