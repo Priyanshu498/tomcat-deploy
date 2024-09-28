@@ -1,8 +1,16 @@
+---
 plugin: aws_ec2
 regions:
-  - us-east-1
+   - us-east-1
 filters:
-  instance-state-name: running
-keyed_groups:
-  - key: tags.Name
-    prefix: tag
+  tag:Name:
+    - "TomcatInstance"
+    - "TomcatInstance"
+compose:
+   ansible_host: public_ip_address  # For public instances
+   ansible_host: private_ip_address  # Uncomment if using private instances
+# Optional: Use strict mode to enforce only these hosts
+strict: False
+# Optional: cache the inventory for better performance
+cache: True
+cache_timeout: 600  # seconds
