@@ -11,6 +11,3 @@ compose:
    ansible_host: private_ip_address  # Uncomment if using private instances
 # Optional: Use strict mode to enforce only these hosts
 strict: False
-# Optional: cache the inventory for better performance
-cache: True
-cache_timeout: 600  # seconds
