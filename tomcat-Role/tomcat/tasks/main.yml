@@ -1,5 +1,10 @@
-# tasks/main.yml
----
+- name: Update apt package index
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  tags:
+    - task0
+
 - name: Ensure required packages are installed
   package:
     name: "{{ item }}"
@@ -12,10 +17,11 @@
 - name: Set JAVA_HOME
   lineinfile:
     path: /etc/environment
-    line: "JAVA_HOME=/usr/lib/jvm/jre"
+    line: "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"  # Update this path accordingly
     state: present
   tags:
     - task2
+
 
 - name: Create Tomcat group
   group:
