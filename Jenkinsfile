@@ -76,7 +76,7 @@ pipeline {
                 sshagent(['tom-1-key.pem']) {
                     script {
                         sh '''
-                            ansible-playbook -i  playbook.yml
+                            ansible-playbook -i aws_ec2 playbook.yml
                         '''                               
                     }   
                 }
