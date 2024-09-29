@@ -22,3 +22,8 @@ variable "egress_ports" {
     cidr_blocks = list(string)
   }))
 }
+
+variable "vpc_id-01" {
+  type = string
+  
+}
