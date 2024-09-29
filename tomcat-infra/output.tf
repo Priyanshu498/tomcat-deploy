@@ -53,3 +53,4 @@ output "bucket_id" {
 output "bucket_versioning_status" {
   value = module.s3.bucket_versioning_status
 }
+
