@@ -1,7 +1,7 @@
 
 ---
 - name: Deploy Tomcat using Ansible Role
-  hosts: all
+  hosts: aws_ec2
   become: yes
   roles:
     - role: tomcat-Role/tomcat
