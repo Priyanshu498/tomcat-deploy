@@ -73,7 +73,7 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                sshagent(['tomcat']) {
+                sshagent(['tom-1-key.pem']) {
                     script {
                         sh '''
                             ansible-playbook -i ./tomcat_roles/Tomcat/aws_ec2.yml ./tomcat_roles/Tomcat/playbook.yml
