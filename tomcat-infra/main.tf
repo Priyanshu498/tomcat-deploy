@@ -55,6 +55,7 @@ module "security_group" {
   security_group_name = "Tom-SG"
   ingress_ports       = var.ingress_ports
   egress_ports        = var.egress_ports
+  vpc_id-01 = module.vpc_peering.vpc_id-01
 }
 
 
@@ -99,3 +100,13 @@ module "s3" {
   bucket_name = "my-tomcat-test-bucket-69-ninja"
 }
 
+module "vpc_peering" {
+  source          = "./modules/vpc_peering"
+  vpc_id          = module.vpc.vpc_id
+  region_name =  var.region_name
+  vpc_peering_name =  var.vpc_peering_name
+  cidr_range = var.cidr_range
+  default_vpc_cidr = var.default_vpc_cidr
+  private_route_table_id = module.route_tables.private_route_table_id
+  public_route_table_id = module.route_tables.public_route_table_id
+}
