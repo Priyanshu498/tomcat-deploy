@@ -4,91 +4,93 @@ pipeline {
         choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Select action: apply or destroy')
     }
     environment {
-        TERRAFORM_WORKSPACE = "/Users/priyanshu/.jenkins/workspace/tool_deploy/tomcat-infra/"
-        INSTALL_WORKSPACE = "/Users/priyanshu/.jenkins/workspace/tool_deploy/tomcat/"
-        // Update PATH to include the directory where Terraform is installed
-        PATH = "${env.PATH}:/opt/homebrew/bin" // Use env.PATH instead of PATH
-    }                        
+        TERRAFORM_WORKSPACE = "/var/lib/jenkins/workspace/tool_deploy/tomcat-infra/"
+        INSTALL_WORKSPACE = "/var/lib/jenkins/workspace/tool_deploy/tomcat/"
+    }
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/Priyanshu498/tomcat-deploy.git'
+                git branch: 'main', url: 'https://github.com/Priyanshu498/Final-tomcat.git'
             }
         }
-
         stage('Terraform Init') {
             steps {
+                // Initialize Terraform
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform init"
             }
         }
-
         stage('Terraform Plan') {
             steps {
                 // Run Terraform plan
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform plan"
             }
         }
-
         stage('Approval For Apply') {
             when {
                 expression { params.ACTION == 'apply' }
             }
             steps {
                 // Prompt for approval before applying changes
-                input message: "Do you want to apply Terraform changes?", ok: "Yes"
+                input "Do you want to apply Terraform changes?"
             }
         }
-
         stage('Terraform Apply') {
             when {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                // Apply the changes
-                sh "cd ${env.TERRAFORM_WORKSPACE} && terraform apply -auto-approve"
+                // Run Terraform apply
+                sh """
+                cd ${env.TERRAFORM_WORKSPACE}
+                terraform apply -auto-approve
+                mkdir -p ${env.INSTALL_WORKSPACE}  # Create the directory if it doesn't exist
+                sudo cp ${env.TERRAFORM_WORKSPACE}/tom-1-key.pem ${env.INSTALL_WORKSPACE}/
+                sudo chown jenkins:jenkins ${env.INSTALL_WORKSPACE}/tom-1-key.pem
+                sudo chmod 400 ${env.INSTALL_WORKSPACE}/tom-1-key.pem
+                """
             }
         }
-
         stage('Approval for Destroy') {
             when {
                 expression { params.ACTION == 'destroy' }
             }
             steps {
                 // Prompt for approval before destroying resources
-                input message: "Do you want to Terraform Destroy?", ok: "Yes"
+                input "Do you want to Terraform Destroy?"
             }
         }
-
         stage('Terraform Destroy') {
             when {
                 expression { params.ACTION == 'destroy' }
             }
             steps {
-                // Destroy the infrastructure
+                // Destroy Infra
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform destroy -auto-approve"
             }
         }
-
         stage('Tool Deploy') {
             when {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                sshagent(['tom-1-key.pem']) { // Corrected line
-                    sh '''
-                    ansible-playbook -i ./tomcat-Role/tomcat/aws_ec2.yml ./tomcat-Role/tomcat/playbook.yml
-                    '''
+                sshagent(['tomcat']) {
+                    script {
+                        sh '''
+                            ansible-playbook -i ./tomcat_roles/Tomcat/aws_ec2.yml ./tomcat_roles/Tomcat/playbook.yml
+                        '''
+                    }
                 }
             }
         }
     }
-
     post {
         success {
-            echo 'Deployment successful'
+            // Actions to take if the pipeline is successful
+            echo 'Succeeded!'
         }
         failure {
-            echo 'Deployment failed'
+            // Actions to take if the pipeline fails
+            echo 'Failed!'
         }
     }
 }
