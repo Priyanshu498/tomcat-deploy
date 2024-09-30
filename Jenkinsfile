@@ -6,14 +6,13 @@ pipeline {
     environment {
         TERRAFORM_WORKSPACE = "/var/lib/jenkins/workspace/tool_deploy/tomcat-infra/"
         INSTALL_WORKSPACE = "/var/lib/jenkins/workspace/tool_deploy/tomcat/"
-        PRIVATE_KEY_PATH = "${env.INSTALL_WORKSPACE}/tom-1-key.pem"
+       
     }
     stages {
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/Priyanshu498/tomcat-deploy.git'
-                // Debugging step to check if playbook.yml is present after cloning
-                sh "ls -al ${env.INSTALL_WORKSPACE}"
+
             }
         }
         stage('Terraform Init') {
@@ -72,15 +71,10 @@ pipeline {
             steps {
                 sshagent(['tom-1-key.pem']) {
                     script {
-                        // Debugging step to list contents before ansible-playbook
-                        sh """
-                            echo "Listing contents of ${env.INSTALL_WORKSPACE}:"
-                            ls -al ${env.INSTALL_WORKSPACE}
-                        """
-                        // Ensure correct path for playbook.yml
+                        
                         sh """
                             cd ${env.INSTALL_WORKSPACE}
-                            ansible-playbook -i aws_ec2.yaml playbook.yml  # Adjust the path if necessary
+                            ansible-playbook -i aws_ec2.yaml playbook.yml  
                         """                               
                     }   
                 }
