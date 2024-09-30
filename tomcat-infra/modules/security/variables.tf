@@ -1,6 +1,8 @@
+# Variable Definitions
 variable "vpc_id" {
   type = string
 }
+
 variable "security_group_name" {
   type = string
 }
@@ -25,5 +27,4 @@ variable "egress_ports" {
 
 variable "vpc_id-01" {
   type = string
-  
 }
