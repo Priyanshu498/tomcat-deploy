@@ -70,6 +70,12 @@ variable "ingress_ports" {
       to_port     = 22
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 0        
+      to_port     = 0        
+      protocol    = "-1"     
+      cidr_blocks = ["0.0.0.0/0"]
     }
   ]
 }
@@ -91,8 +97,6 @@ variable "egress_ports" {
   ]
 }
 
-
-
 variable "desired_capacity" {
   default = "2"
 }
@@ -112,11 +116,11 @@ variable "port" {
 variable "listener_port" {
   default = "80"
 }
-#vpc peering
+
+# VPC Peering Configuration
 variable "region_name" {
   type = string
   default = "us-east-1"
-  
 }
 
 variable "vpc_peering_name" {
@@ -132,5 +136,4 @@ variable "cidr_range" {
 variable "default_vpc_cidr" {
   type = string
   default = "172.31.0.0/16"
-
 }
