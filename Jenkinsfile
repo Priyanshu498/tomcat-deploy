@@ -74,7 +74,7 @@ pipeline {
                         
                         sh """
                             cd ${env.INSTALL_WORKSPACE}
-                            ansible-playbook -i aws_ec2.yaml playbook.yml  
+                             ansible-playbook -i ./tomcat_Role/tomcat/aws_ec2.yaml ./tomcat_Role/tomcat/playbook.yml
                         """                               
                     }   
                 }
