@@ -6,22 +6,23 @@ pipeline {
     environment {
         TERRAFORM_WORKSPACE = "/var/lib/jenkins/workspace/tool_deploy/tomcat-infra/"
         INSTALL_WORKSPACE = "/var/lib/jenkins/workspace/tool_deploy/tomcat/"
+        PRIVATE_KEY_PATH = "${env.INSTALL_WORKSPACE}/tom-1-key.pem"
     }
     stages {
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/Priyanshu498/tomcat-deploy.git'
+                // Debugging step to check if playbook.yml is present after cloning
+                sh "ls -al ${env.INSTALL_WORKSPACE}"
             }
         }
         stage('Terraform Init') {
             steps {
-                // Initialize Terraform
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform init"
             }
         }
         stage('Terraform Plan') {
             steps {
-                // Run Terraform plan
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform plan"
             }
         }
@@ -30,7 +31,6 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                // Prompt for approval before applying changes
                 input "Do you want to apply Terraform changes?"
             }
         }
@@ -39,11 +39,10 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                // Run Terraform apply
                 sh """
                 cd ${env.TERRAFORM_WORKSPACE}
                 terraform apply -auto-approve
-                mkdir -p ${env.INSTALL_WORKSPACE}  # Create the directory if it doesn't exist
+                mkdir -p ${env.INSTALL_WORKSPACE}
                 sudo cp ${env.TERRAFORM_WORKSPACE}/tom-1-key.pem ${env.INSTALL_WORKSPACE}/
                 sudo chown jenkins:jenkins ${env.INSTALL_WORKSPACE}/tom-1-key.pem
                 sudo chmod 400 ${env.INSTALL_WORKSPACE}/tom-1-key.pem
@@ -55,7 +54,6 @@ pipeline {
                 expression { params.ACTION == 'destroy' }
             }
             steps {
-                // Prompt for approval before destroying resources
                 input "Do you want to Terraform Destroy?"
             }
         }
@@ -64,7 +62,6 @@ pipeline {
                 expression { params.ACTION == 'destroy' }
             }
             steps {
-                // Destroy Infra
                 sh "cd ${env.TERRAFORM_WORKSPACE} && terraform destroy -auto-approve"
             }
         }
@@ -75,9 +72,16 @@ pipeline {
             steps {
                 sshagent(['tom-1-key.pem']) {
                     script {
-                        sh '''
-                            ansible-playbook -i aws_ec2.ymal playbook.yml
-                        '''                               
+                        // Debugging step to list contents before ansible-playbook
+                        sh """
+                            echo "Listing contents of ${env.INSTALL_WORKSPACE}:"
+                            ls -al ${env.INSTALL_WORKSPACE}
+                        """
+                        // Ensure correct path for playbook.yml
+                        sh """
+                            cd ${env.INSTALL_WORKSPACE}
+                            ansible-playbook -i aws_ec2.yaml playbook.yml  # Adjust the path if necessary
+                        """                               
                     }   
                 }
             }
@@ -85,12 +89,10 @@ pipeline {
     }
     post {
         success {
-            // Actions to take if the pipeline is successful
-            echo 'Succeeded!'
+            echo 'Deployment Succeeded!'
         }
         failure {
-            // Actions to take if the pipeline fails
-            echo 'Failed!'
+            echo 'Deployment Failed!'
         }
     }
 }
