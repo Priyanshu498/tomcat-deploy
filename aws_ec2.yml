@@ -8,10 +8,9 @@ filters:
     - "TomcatInstance"
     - "TomcatInstance"
 compose:
-   ansible_host: public_ip_address  # For public instances
+  # ansible_host: public_ip_address  # For public instances
    ansible_host: private_ip_address  # Uncomment if using private instances
 # Optional: Use strict mode to enforce only these hosts
 strict: False
 vars:
   ansible_python_interpreter: /usr/bin/python3
-
