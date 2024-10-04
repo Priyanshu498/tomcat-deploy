@@ -44,9 +44,9 @@ pipeline {
                 cd ${env.TERRAFORM_WORKSPACE}
                 terraform apply -auto-approve
                 mkdir -p ${env.INSTALL_WORKSPACE} 
-                sudo cp ${env.TERRAFORM_WORKSPACE}/tom-1-key.pem ${env.INSTALL_WORKSPACE}/
-                sudo chown jenkins:jenkins ${env.INSTALL_WORKSPACE}/tom-1-key.pem
-                sudo chmod 400 ${env.INSTALL_WORKSPACE}/tom-1-key.pem
+                sudo cp ${env.TERRAFORM_WORKSPACE}/new-key.pem ${env.INSTALL_WORKSPACE}/
+                sudo chown jenkins:jenkins ${env.INSTALL_WORKSPACE}/new-key.pem
+                sudo chmod 400 ${env.INSTALL_WORKSPACE}/new-key.pem
                 """
             }
         }
