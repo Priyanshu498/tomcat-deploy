@@ -43,7 +43,7 @@ variable "subnet_id" {
 }
 
 variable "key_name" {
-  default = "tom-1-key"
+  default = "new-key"
 }
 
 variable "security_group_name" {
