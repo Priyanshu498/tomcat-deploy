@@ -73,7 +73,7 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                sshagent(['tom-1-key.pem']) {
+                sshagent(['tom']) {
                     script {
                         sh '''
                             ansible-playbook -i aws_ec2.yaml playbook.yml
