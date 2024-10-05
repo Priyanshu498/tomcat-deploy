@@ -1,0 +1,111 @@
+---
+- name: Install Tomcat
+  hosts: web
+  become: yes
+  vars:
+    tomcat_version: "{{ tomcat_version }}"
+    tomcat_user: "tomcat"
+    tomcat_home: "/opt/tomcat/latest"
+    java_home: "/usr/lib/jvm/default-java"
+
+  tasks:
+    - name: Ensure required packages are installed
+      apt:
+        name:
+          - default-jdk
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Create Tomcat user
+      user:
+        name: "{{ tomcat_user }}"
+        shell: /bin/false
+        home: "/opt/tomcat"
+        create_home: yes
+        system: yes
+
+    - name: Download Tomcat
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_version.split('.')[0] }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+
+    - name: Create Tomcat directory
+      file:
+        path: "{{ tomcat_home }}"
+        state: directory
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_user }}"
+
+    - name: Extract Tomcat
+      unarchive:
+        src: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+        dest: "{{ tomcat_home }}"
+        remote_src: yes
+        extra_opts: [ "--strip-components=1" ]
+
+    - name: Set permissions for Tomcat
+      file:
+        path: "{{ tomcat_home }}"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_user }}"
+        mode: '0755'
+        recurse: yes
+
+    - name: Configure Tomcat users
+      copy:
+        dest: "{{ tomcat_home }}/conf/tomcat-users.xml"
+        content: |
+          <tomcat-users>
+              <role rolename="manager-gui"/>
+              <user username="manager" password="19@priyanshu" roles="manager-gui"/>
+              <role rolename="admin-gui"/>
+              <user username="admin" password="19@priyanshu" roles="manager-gui,admin-gui"/>
+          </tomcat-users>
+
+    - name: Create systemd service file for Tomcat
+      copy:
+        dest: /etc/systemd/system/tomcat.service
+        content: |
+          [Unit]
+          Description=Apache Tomcat Web Application Container
+          After=network.target
+
+          [Service]
+          Type=forking
+
+          Environment=JAVA_HOME={{ java_home }}
+          Environment=CATALINA_PID={{ tomcat_home }}/temp/tomcat.pid
+          Environment=CATALINA_HOME={{ tomcat_home }}
+          Environment=CATALINA_BASE={{ tomcat_home }}
+          Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+          Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom"
+
+          ExecStart={{ tomcat_home }}/bin/startup.sh
+          ExecStop={{ tomcat_home }}/bin/shutdown.sh
+
+          User={{ tomcat_user }}
+          Group={{ tomcat_user }}
+          UMask=0007
+          RestartSec=10
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      command: systemctl daemon-reload
+
+    - name: Start Tomcat service
+      systemd:
+        name: tomcat
+        state: started
+        enabled: yes
+
+    - name: Check Tomcat service status
+      systemd:
+        name: tomcat
+        state: started
+      register: tomcat_status
+
+    - debug:
+        var: tomcat_status
