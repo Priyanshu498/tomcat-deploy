@@ -1,1 +1,60 @@
 scp -i aws3.pem aws3.pem ubuntu@3.133.106.232:/home/ubuntu/
+
+
+___________________________________________________________________________________
+___________________________________________________________________________________
+git clone https://github.com/opstree/spring3hibernate.git
+cd spring3hibernate
+sudo apt install openjdk-11-jdk maven
+mvn clean package
+ sudo /opt/tomcat/latest/bin/shutdown.sh
+sudo /opt/tomcat/latest/bin/startup.sh
+ sudo apt install net-tools
+sudo ss -tuln | grep 9090
+sudo cp ~/spring3hibernate/target/Spring3HibernateApp.war /opt/tomcat/latest/webapps
+sudo chown tomcat:tomcat /opt/tomcat/latest/webapps/Spring3HibernateApp.war
+sudo systemctl restart tomcat
+___________________________________________________________________________________
+___________________________________________________________________________________
+
+step - 1
+cd /var/lib/jenkins/
+step -2
+sudo vim jenkins.model.JenkinsLocationConfiguration.xml
+step -3
+‹?xml version='1.1' encoding='UTF-8'?>
+‹jenkins.model. JenkinsLocationConfiguration>
+<jenkinsUrl>http://ec2-3-85-106-185. compute-1. amazonaws. com: 8080/</jenkinsUrl>
+‹/jenkins.model.JenkinsLocationConfiguration>
+step-4
+sudo service jenkins restart
+___________________________________________________________________________________
+___________________________________________________________________________________
+
+git clone https://github.com/opstree/spring3hibernate.git
+sudo apt update
+sudo apt install openjdk-11-jdk
+sudo apt install maven
+mvn dependency:resolve
+mvn compile
+mvn test
+mvn package
+mvn install
+sudo apt install tomcat9 tomcat9-admin
+Add the block of code   /var/lib/tomcat9/conf/tomcat-users.xml
+restart the service 
+open the port in ec2
+manager webapps
+enter admin,admin(id,password)
+webapps--> id, password (admin,admin)
+scp -i ~/Downloads/linux_demo.pem ubuntu@65.2.6.193:/home/ubuntu/spring3hibernate/target/Spring3HibernateApp.war ~
+
+___________________________________________________________________________________
+___________________________________________________________________________________
+
+ansible aws_ec2 -i /opt/aws_ec2.yml -m ping --private-key=/home/ubuntu/ansible--pritam.pem -e "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'"
+
+___________________________________________________________________________________
+___________________________________________________________________________________
+
+
