@@ -20,7 +20,7 @@ variable "private_subnet_cidrs" {
 
 variable "availability_zones" {
   type    = list(string)
-  default = ["us-east-1a", "us-east-1b"]
+  default = ["ap-south-1a", "ap-south-1b"]
 }
 
 # Tags for Resources
@@ -31,7 +31,7 @@ variable "tags" {
 
 # EC2 Instance Configuration
 variable "ami_id" {
-  default = "ami-0e86e20dae9224db8"
+  default = "ami-0614680123427b75e"
 }
 
 variable "instance_type" {
@@ -120,7 +120,7 @@ variable "listener_port" {
 # VPC Peering Configuration
 variable "region_name" {
   type = string
-  default = "us-east-1"
+  default = "ap-south-1"
 }
 
 variable "vpc_peering_name" {
@@ -130,7 +130,7 @@ variable "vpc_peering_name" {
 
 variable "cidr_range" {
   type = string
-  default = "172.16.0.0/22"
+  default = "172.31.0.0/16"
 }
 
 variable "default_vpc_cidr" {
