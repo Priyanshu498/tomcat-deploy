@@ -16,7 +16,7 @@ variable "vpc_peering_name" {
 
 variable "cidr_range" {
   type = string
-  default = "172.16.0.0/22"
+  default = "172.31.0.0/16"
 }
 
 variable"public_route_table_id" {
