@@ -1,6 +1,6 @@
 # VPC Configuration
 variable "cidr_block" {
-  default = "172.16.0.0/22"
+  default = "172.31.0.0/16"
 }
 
 variable "aws_vpc" {
